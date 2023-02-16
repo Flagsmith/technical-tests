@@ -20,14 +20,20 @@ Some notes / clarifications:
 - You may use the default sqlite database.
 - You should not implement any pagination on the list flags endpoint.
 
+## Extension 1
+
 As an extension, by assuming that you will only ever have a single instance of the API application running, implement
 an in-memory cache system which determines when flags were last retrieved for an environment. You should NOT use a
 database field for this. You can surface this information via a new (unauthenticated) endpoint, or in the django
 admin panel.
 
+## Extension 2
+
 As a final extension, you are tasked with deploying this application which must be able to scale from 50 requests per
 second to bursts of 2,000 requests per second. Your task is to build the platform that can serve the requests to the
 API.
+
+## Hosting
 
 The priority of requirements are listed as follows with the most important first.
 
