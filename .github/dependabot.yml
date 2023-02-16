@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/python-django"
+    schedule:
+      interval: "weekly"
