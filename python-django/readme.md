@@ -20,6 +20,12 @@ Some notes / clarifications:
 - You may use the default sqlite database.
 - You should not implement any pagination on the list flags endpoint.
 
+Your code will be judged based on: 
+
+- How well your solution meets the requirements
+- The readability and structure 
+- The quality of any tests you choose to write
+
 ## Extension 1
 
 As an extension, by assuming that you will only ever have a single instance of the API application running, implement
