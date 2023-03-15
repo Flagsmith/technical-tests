@@ -39,8 +39,6 @@ As a final extension, you are tasked with deploying this application which must 
 second to bursts of 2,000 requests per second. Your task is to build the platform that can serve the requests to the
 API.
 
-## Hosting
-
 The priority of requirements are listed as follows with the most important first.
 
 - Uptime/Reliability
@@ -50,3 +48,5 @@ The priority of requirements are listed as follows with the most important first
 
 In fewer than 8 paragraphs, describe how you would achieve this. Key things to think about are: Overall design,
 platform choices, any additional tools, management & maintenance.
+
+NOTE: this is a written exercise, you do not need to write any code for this.
