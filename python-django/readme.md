@@ -9,13 +9,14 @@ relationship with the Feature and Environment, as well as a boolean value to des
 disabled in a given environment. The API endpoint should return the enabled / disabled state of the feature and the name
 (+ metadata) for the feature. You need not return any information about the environment.
 
-We have created the django application and some boilerplate code for you. You should complete the `flags` app in the
-`apps` directory.
+We have created the django application, `flags`, in the `apps` directory and added some boilerplate code for you, 
+including a stub of the function based view we expect you to complete. If you would rather use a class-based view, you 
+may, but you should justify in your response why you chose to do so.
 
 Some notes / clarifications:
 
-- To determine the environment, you may use either a query parameter or an authentication class. It must not be
-    possible, however, to request flags without an environment.
+- To determine the environment, you may use a header or a query parameter. You may use an authentication class, but are 
+    not required to. It must not be possible, however, to request flags without an environment.
 - You need not worry about API endpoints to manage these objects, you can use the django admin as necessary.
 - You may use the default sqlite database.
 - You should not implement any pagination on the list flags endpoint.
