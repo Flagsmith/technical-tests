@@ -3,6 +3,21 @@
 Repository containing technical tests for applicants to work at Flagsmith. We currently have the following tests available:
 
 1. [Server-side/Python/Django](/python-django/)
+2. [Infrastructure/Kubernetes/DevOps](/kubernetes/) - Interactive debugging challenges for infrastructure roles
+
+## Kubernetes Interview System
+
+The `kubernetes/` directory contains a self-contained technical interview system for infrastructure and DevOps roles. It creates broken Flagsmith deployments that candidates must debug in real-time.
+
+**Quick start:**
+```bash
+cd kubernetes/
+make run
+```
+
+This launches an interactive system where you can select debugging challenges and share a terminal session with candidates. The system provides a complete Kubernetes environment with Flagsmith deployed in various broken states.
+
+For detailed setup instructions, available challenges, and architecture information, see [kubernetes/README.md](kubernetes/README.md).
 
 ## Instructions
 

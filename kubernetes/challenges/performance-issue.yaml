@@ -1,0 +1,39 @@
+name: "Performance Degradation Issue"
+description: "Candidate must identify and remove a CPU-intensive sidecar container causing API performance issues."
+estimates:
+  Lv1: 50
+  Lv2: 22
+  Lv3: 12
+
+helm_values:
+  api:
+    replicaCount: 1
+    resources:
+      limits:
+        cpu: "100m"
+        memory: "256Mi"
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+    # Disable autoscaling
+    autoscaling:
+      enabled: false
+
+kubectl_patches:
+  - resource: "deployment"
+    name: "flagsmith-api"
+    namespace: "flagsmith"
+    patch_type: "json"
+    patch:
+      # Add a CPU-intensive sidecar container to create load
+      - op: "add"
+        path: "/spec/template/spec/containers/-"
+        value:
+          name: "cpu-hog"
+          image: "alpine:3.21"
+          command: ["/bin/sh"]
+          args: ["-c", "while true; do dd if=/dev/zero of=/dev/null bs=1M count=100; sleep 1; done"]
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "64Mi"

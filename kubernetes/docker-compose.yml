@@ -1,0 +1,90 @@
+name: k8s_challenger
+
+services:
+  # K3s Kubernetes cluster
+  k3s:
+    image: rancher/k3s:v1.34.1-k3s1
+    command: >-
+      server
+      --disable=traefik
+      --disable=servicelb
+      --write-kubeconfig-mode=644
+      --node-name=k3s-server
+    privileged: true
+    restart: unless-stopped
+    environment:
+      K3S_KUBECONFIG_OUTPUT: /output/kubeconfig.yaml
+      K3S_KUBECONFIG_MODE: "666"
+    volumes:
+      - k3s-server:/var/lib/rancher/k3s
+      - kubeconfig-data:/output
+    ports:
+      - "6443:6443"
+    networks:
+      flagsmith-network:
+        aliases:
+          - k3s-server
+    healthcheck:
+      test: ["CMD", "kubectl", "get", "nodes"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  cli:
+    build:
+      context: .
+      dockerfile: cli/Dockerfile
+    volumes:
+      - ./challenges:/app/challenges:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - k3s-server:/etc/rancher/k3s:ro
+      - kubeconfig-data:/root/.kube
+      - tmate-info:/tmp/tmate-info
+    environment:
+      KUBECONFIG: /root/.kube/config
+      CHALLENGES_DIR: /app/challenges
+    depends_on:
+      k3s:
+        condition: service_healthy
+    networks:
+      - flagsmith-network
+    stdin_open: true
+    tty: true
+    restart: "no"
+    command: ["python", "-m", "cli.main"]
+
+  # Candidate debugging environment with tmate
+  candidate-env:
+    build:
+      context: ./candidate-env
+      dockerfile: Dockerfile
+    volumes:
+      - k3s-server:/etc/rancher/k3s:ro
+      - kubeconfig-data:/home/candidate/.kube-shared:ro
+      - tmate-info:/tmp/tmate-info
+    environment:
+      KUBECONFIG: /home/candidate/.kube/config
+    depends_on:
+      k3s:
+        condition: service_healthy
+    networks:
+      - flagsmith-network
+    ports:
+      - "2222:22"  # SSH port for tmate
+    restart: "no"
+
+volumes:
+  k3s-server:
+    driver: local
+  kubeconfig-data:
+    driver: local
+  tmate-info:
+    driver: local
+
+networks:
+  flagsmith-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

@@ -1,0 +1,27 @@
+name: "Resource Configuration Issue"
+description: "Candidate must diagnose OOMKilled pods and adjust memory limits that are set too low."
+estimates:
+  Lv1: 40
+  Lv2: 15
+  Lv3: 8
+
+helm_values:
+  api:
+    replicaCount: 1
+    resources: {}
+
+kubectl_patches:
+  - resource: "deployment"
+    name: "flagsmith-api"
+    namespace: "flagsmith"
+    patch_type: "json"
+    patch:
+      - op: "add"
+        path: "/spec/template/spec/containers/0/resources"
+        value:
+          limits:
+            cpu: 500m
+            memory: "64Mi"
+          requests:
+            cpu: 300m
+            memory: "32Mi"

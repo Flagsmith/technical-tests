@@ -1,0 +1,49 @@
+name: "Network Connectivity Issue"
+description: "Candidate must fix broken service selectors and DNS configuration preventing API-database connectivity."
+estimates:
+  Lv1: "∞"
+  Lv2: 20
+  Lv3: 9
+
+helm_values:
+  api:
+    replicaCount: 1
+  devPostgresql:
+    enabled: true
+    nameOverride: dev-postgresql
+    auth:
+      postgresPassword: flagsmith
+      database: flagsmith
+
+kubectl_patches:
+  - resource: "service"
+    name: "flagsmith-dev-postgresql"
+    namespace: "flagsmith"
+    patch_type: "json"
+    patch:
+      # Break the service selector to prevent endpoint discovery
+      - op: "replace"
+        path: "/spec/selector/app.kubernetes.io~1name"
+        value: "postgresql-wrong"
+  
+  - resource: "deployment"
+    name: "flagsmith-api"
+    namespace: "flagsmith"
+    patch_type: "json"
+    patch:
+      # Override DATABASE_URL to use incorrect service name (missing -dev-)
+      - op: "add"
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: "DATABASE_URL"
+          value: "postgresql://postgres:flagsmith@flagsmith-postgresql:5432/flagsmith"
+      
+      # Add incorrect DNS search configuration
+      - op: "add"
+        path: "/spec/template/spec/dnsConfig"
+        value:
+          options:
+          - name: "ndots"
+            value: "1"
+          - name: "timeout" 
+            value: "2"

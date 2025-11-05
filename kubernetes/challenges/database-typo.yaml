@@ -1,0 +1,21 @@
+name: "Database Connection Issue"
+description: "Candidate must identify and fix a typo in the database service name causing connection failures."
+estimates:
+  Lv1: 35
+  Lv2: 12
+  Lv3: 7
+
+helm_values:
+  devPostgresql:
+    enabled: true
+    nameOverride: dev-postgresql
+    auth:
+      postgresPassword: flagsmith
+      database: flagsmith
+  api:
+    extraEnv:
+      # This broken DATABASE_URL will override the correct one from the secret
+      DATABASE_URL: "postgresql://postgres:flagsmith@dev-postgresl:5432/flagsmith"
+
+# No kubectl patches needed - broken config is deployed directly
+kubectl_patches: []
